@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Enhanced Product Listing</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 2rem;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+    }
+
+    input[type="text"], input[type="range"], select {
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+
+    .product-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .product-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+      text-align: center;
+    }
+
+    .product-card img {
+      max-width: 100%;
+      height: 150px;
+      object-fit: cover;
+      border-radius: 6px;
+    }
+
+    .product-card h3 {
+      margin: 0.5rem 0;
+    }
+
+    .product-card p {
+      margin: 0.2rem 0;
+    }
+
+    .product-card button {
+      margin-top: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: #00c853;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .cart-count {
+      text-align: center;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+
+    .price-range {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🛒 Product Listing</h1>
+
+  <div class="controls">
+    <input type="text" id="searchInput" placeholder="Search products..." />
+    <select id="filterCategory">
+      <option value="all">All Categories</option>
+      <option value="electronics">Electronics</option>
+      <option value="clothing">Clothing</option>
+      <option value="books">Books</option>
+    </select>
+    <select id="sortOption">
+      <option value="default">Sort</option>
+      <option value="priceAsc">Price: Low to High</option>
+      <option value="priceDesc">Price: High to Low</option>
+      <option value="ratingDesc">Rating: High to Low</option>
+    </select>
+    <div class="price-range">
+      <label for="priceRange">Max Price: $<span id="maxPrice">1000</span></label>
+      <input type="range" id="priceRange" min="0" max="1000" step="10" value="1000" />
+    </div>
+  </div>
+
+  <div class="product-list" id="productList"></div>
+  <p class="cart-count">🛒 Cart Items: <span id="cartCount">0</span></p>
+
+  <script>
+    const products = [
+      { id: 1, name: 'Oppo F19', category: 'electronics', price: 499, rating: 4.5, img: 'https://tse2.mm.bing.net/th?id=OIP.tyOP6_jay8N5lTtZyauCjwHaGd&pid=Api&P=0&h=180' },
+      { id: 2, name: 'Dell G15 5511', category: 'electronics', price: 899, rating: 4.7, img: 'https://ph-test-11.slatic.net/p/cc70ba166979f045d9a8d11902d0836e.jpg' },
+      { id: 3, name: 'Jeans', category: 'clothing', price: 59, rating: 4.1, img: 'https://tse3.mm.bing.net/th?id=OIP.lxnrOFnj51QIDzxr-gGSZAHaMj&pid=Api&P=0&h=180' },
+      { id: 4, name: 'T-Shirt', category: 'clothing', price: 25, rating: 3.9, img: 'https://w7.pngwing.com/pngs/109/746/png-transparent-zayn-malik-one-direction-zayn-malik-tshirt-fashion-tartan.png' },
+      { id: 5, name: 'Novel Book', category: 'books', price: 15, rating: 4.8, img: 'https://bestlifeonline.com/wp-content/uploads/sites/3/2020/10/Harry-Potter-and-the-Chamber-of-Secrets-book-cover.jpg' },
+      { id: 6, name: 'Science Book', category: 'books', price: 40, rating: 4.6, img: 'https://tse2.mm.bing.net/th?id=OIP.YiGqr8G7lyIUvqAnQwqk5QHaK0&pid=Api&P=0&h=180' },
+    ];
+
+    let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+    const searchInput = document.getElementById('searchInput');
+    const filterCategory = document.getElementById('filterCategory');
+    const sortOption = document.getElementById('sortOption');
+    const priceRange = document.getElementById('priceRange');
+    const maxPrice = document.getElementById('maxPrice');
+    const productList = document.getElementById('productList');
+    const cartCount = document.getElementById('cartCount');
+
+    function updateCart() {
+      localStorage.setItem('cart', JSON.stringify(cart));
+      cartCount.textContent = cart.length;
+    }
+
+    function renderProducts() {
+      const searchText = searchInput.value.toLowerCase();
+      const category = filterCategory.value;
+      const sort = sortOption.value;
+      const maxPriceVal = parseInt(priceRange.value);
+
+      maxPrice.textContent = maxPriceVal;
+
+      let filtered = products.filter(p => 
+        (category === 'all' || p.category === category) &&
+        p.name.toLowerCase().includes(searchText) &&
+        p.price <= maxPriceVal
+      );
+
+      if (sort === 'priceAsc') filtered.sort((a, b) => a.price - b.price);
+      else if (sort === 'priceDesc') filtered.sort((a, b) => b.price - a.price);
+      else if (sort === 'ratingDesc') filtered.sort((a, b) => b.rating - a.rating);
+
+      productList.innerHTML = '';
+
+      if (filtered.length === 0) {
+        productList.innerHTML = '<p>No products found.</p>';
+        return;
+      }
+
+      filtered.forEach(product => {
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <img src="${product.img}" alt="${product.name}" />
+          <h3>${product.name}</h3>
+          <p>Category: ${product.category}</p>
+          <p>Price: $${product.price}</p>
+          <p>Rating: ⭐ ${product.rating}</p>
+          <button onclick="addToCart(${product.id})">Add to Cart</button>
+        `;
+        productList.appendChild(card);
+      });
+    }
+
+    function addToCart(id) {
+      const product = products.find(p => p.id === id);
+      cart.push(product);
+      updateCart();
+      alert(`${product.name} added to cart!`);
+    }
+
+    // Event listeners
+    searchInput.addEventListener('input', renderProducts);
+    filterCategory.addEventListener('change', renderProducts);
+    sortOption.addEventListener('change', renderProducts);
+    priceRange.addEventListener('input', renderProducts);
+
+    // Initial load
+    updateCart();
+    renderProducts();
+  </script>
+
+</body>
+</html>
