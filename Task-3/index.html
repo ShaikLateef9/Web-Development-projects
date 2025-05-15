@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Travel Buddy</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header>
+    <h1>Travel Buddy 🌍</h1>
+    <p>Your smart travel companion</p>
+  </header>
+
+  <!-- Image Carousel -->
+  <section class="carousel">
+    <img id="carousel-img" src="https://images.unsplash.com/photo-1488085061387-422e29b40080?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHRyYXZlbHxlbnwwfHwwfHx8MA%3D%3D" alt="Travel Image" />
+    <div class="controls">
+      <button onclick="changeImage(-1)">⏮️</button>
+      <button onclick="changeImage(1)">⏭️</button>
+    </div>
+  </section>
+
+  <!-- Weather API Section -->
+  <section class="weather">
+    <h2>🌦️ Check Weather</h2>
+    <input type="text" id="city" placeholder="Enter city (e.g. London)" />
+    <button onclick="getWeather()">Get Weather</button>
+    <div id="weather-result"></div>
+  </section>
+
+  <!-- Quiz Section -->
+  <section class="quiz">
+    <h2>🧭 Travel Personality Quiz</h2>
+    <p>What type of traveler are you?</p>
+    <button onclick="startQuiz()">Start Quiz</button>
+    <div id="quiz-container"></div>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 Travel Buddy. All rights reserved.</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Image Carousel</title>
+  <style>
+    .carousel-container {
+      max-width: 600px;
+      margin: auto;
+      text-align: center;
+    }
+
+    #carousel-img {
+      width: 100%;
+      height: 300px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
+
+    .buttons {
+      margin-top: 15px;
+    }
+
+    .buttons button {
+      padding: 10px 20px;
+      margin: 0 10px;
+      font-size: 16px;
+      cursor: pointer;
+      border: none;
+      background-color: #3498db;
+      color: white;
+      border-radius: 5px;
+    }
+
+    .buttons button:hover {
+      background-color: #2980b9;
+    }
+  </style>
+</head>
+<body>
+
+  
+  <script>
+    const images = [
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSKSAsOFWWMaHfTpwZandRuI-ZIKmnOd9bHhQ&s",
+      "https://img.etimg.com/thumb/width-420,height-315,imgsize-711942,resizemode-75,msid-118427885/nri/visit/indians-bitten-by-travel-bug-are-a-treat-for-many.jpg",
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS74s-MRzRaXhUKGsXOx1TWI5dZSN1VIGKzBA&s"
+    ];
+
+    let currentIndex = 0;
+
+    function changeImage(direction) {
+      currentIndex = (currentIndex + direction + images.length) % images.length;
+      document.getElementById("carousel-img").src = images[currentIndex];
+    }
+
+    // Initialize first image
+    window.onload = () => {
+      document.getElementById("carousel-img").src = images[currentIndex];
+    };
+  </script>
+
+</body>
+</html>
